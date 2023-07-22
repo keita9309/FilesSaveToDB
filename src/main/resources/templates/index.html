@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>画像アップロード</title>
+</head>
+<body><!-- ポイント3: formタグに「enctype="multipart/form-data"」追記 -->
+  <form th:action="@{/portfolio/file/upload}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" id="file">
+    <button type="submit">UPLOAD</button>
+  </form>
+  <div>
+    <p th:text="${message}"></p>
+    <img th:src="${'data:image/png;base64,'+image}" alt="" height="200" width="200">
+  </div>
+</body>
+</html>
