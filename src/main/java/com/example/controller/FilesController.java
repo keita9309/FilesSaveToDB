@@ -17,21 +17,23 @@ public class FilesController {
   @Autowired  
   private FileStorageService storageService;
 
+  /**
+   * 初期表示
+   * 
+   * @param m
+   * @return 表示用のHTMLファイル
+   */
   //@GetMapping(value="/index")
   @GetMapping
   public String index(Model m) {
       String message = "";
-      String path = "";
       try {
           // DBから画像データを取得
           FileDB fileImg = storageService.findById(0);
-          // 画像データの中のバイナリーコードを取得
-          byte[] bytes = fileImg.getFile_obj();
-          // byte[]型をString型に変換
-          String image = Base64.getEncoder().encodeToString(bytes);
-          // viewにレンダリング
+          // String型でファイル名を取得
+          String image = getFileNameOfString(fileImg);
+          // view側にレンダリング
           m.addAttribute("image", image);
-          m.addAttribute("path", path);
           return "index";
           // return "file_upload";
       } catch (Exception e) {
@@ -41,21 +43,26 @@ public class FilesController {
           return "index";
       }
   }
-
+  
+  /**
+   * 選択した画像データのアップロード
+   * 
+   * @param file
+   * @param m
+   * @return 表示用のHTMLファイル
+   */
   //@PostMapping("/upload")
   @PostMapping("/portfolio/file/upload")
   public String uploadFile(@RequestParam("file") MultipartFile file, Model m) {
     String message = "";
     try {
-      // DBから画像データを取得
-      FileDB savedFile = storageService.store(file);
-      // 画像データの中のバイナリーコードを取得
-      byte[] bytes = savedFile.getFile_obj();
-      // byte[]型をString型に変換
-      String image =  Base64.getEncoder().encodeToString(bytes);
-      // アップロードが完了した時のメッセージ
+      // DBに画像データを保存し、保存した画像データをDBから取得
+      FileDB fileImg = storageService.store(file);
+      // String型でファイル名を取得
+      String image = getFileNameOfString(fileImg);
+      // アップロード完了時のメッセージ
       message = "アップロードが完了しました！ ファイル名：" + file.getOriginalFilename();
-      // viewにレンダリング
+      // view側にレンダリング
       m.addAttribute("message", message);
       m.addAttribute("image", image);
       return "index";
@@ -67,5 +74,18 @@ public class FilesController {
       return "index";
       //return "file_upload";
     }
+  }
+  
+  /**
+   * DBから取得したバイナリーデータをString型に変換
+   * 
+   * @param fileImg
+   * @return String型のファイル名
+   */
+  private String getFileNameOfString(FileDB fileImg) {    
+      // 画像データのバイナリーデータを取得
+      byte[] bytes = fileImg.getFile_obj();
+      // バイナリーデータをBase64(byte[]型をString型)に変換し返却
+      return Base64.getEncoder().encodeToString(bytes);
   }
 }
