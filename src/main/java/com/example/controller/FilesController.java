@@ -1,18 +1,15 @@
 package com.example.controller;
 
 import java.util.Base64;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.Entity.FileDB;
 import com.example.service.FileStorageService;
-import lombok.RequiredArgsConstructor;
 
 @Controller
 //@RequestMapping("/portfolio/file")
@@ -26,10 +23,13 @@ public class FilesController {
       String message = "";
       String path = "";
       try {
+          // DBから画像データを取得
           FileDB fileImg = storageService.findById(0);
+          // 画像データの中のバイナリーコードを取得
           byte[] bytes = fileImg.getFile_obj();
-          // ポイント4: Base64.getEncoder().encodeToString(bytes)でbyteをStringにして、Viewに渡す
+          // byte[]型をString型に変換
           String image = Base64.getEncoder().encodeToString(bytes);
+          // viewにレンダリング
           m.addAttribute("image", image);
           m.addAttribute("path", path);
           return "index";
@@ -47,11 +47,15 @@ public class FilesController {
   public String uploadFile(@RequestParam("file") MultipartFile file, Model m) {
     String message = "";
     try {
+      // DBから画像データを取得
       FileDB savedFile = storageService.store(file);
+      // 画像データの中のバイナリーコードを取得
       byte[] bytes = savedFile.getFile_obj();
-      // ポイント4: Base64.getEncoder().encodeToString(bytes)でbyteをStringにして、Viewに渡す
+      // byte[]型をString型に変換
       String image =  Base64.getEncoder().encodeToString(bytes);
-      message = "Uploaded the file successfully: " + file.getOriginalFilename();
+      // アップロードが完了した時のメッセージ
+      message = "アップロードが完了しました！ ファイル名：" + file.getOriginalFilename();
+      // viewにレンダリング
       m.addAttribute("message", message);
       m.addAttribute("image", image);
       return "index";
