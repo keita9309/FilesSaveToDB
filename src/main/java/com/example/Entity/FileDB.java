@@ -26,10 +26,6 @@ public class FileDB implements Serializable {
     
     private String type;
     
-    @Lob
-    @Type(type="org.hibernate.type.ImageType")
-    // MultipartFile file_obj;
     private byte[] file_obj;
-    
     
 }
