@@ -7,6 +7,9 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import com.example.Entity.FileDB;
 
+/**
+ * DB接続用のリポジトリークラス
+ */
 @Mapper
 public interface FilesRepository {
     
