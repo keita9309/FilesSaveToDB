@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.Entity.FileDB;
+import com.example.Entity.FileData;
 import com.example.repository.FilesRepository;
 
 /**
@@ -50,5 +51,17 @@ public class FileStorageService {
     // 画像データを取得し返却
     return filesRepository.findById(id);
   }
+  
+  /**
+   * ダウンロード用の画像データを取得
+   * 
+   * @param id
+   * @return DBから取得した画像データ
+   * @throws IOException
+   */
+  public FileData findByIdForDownload(int id) throws IOException {
+      // 画像データを取得し返却
+      return filesRepository.findByIdForDownload(id);
+    }
 
 }
