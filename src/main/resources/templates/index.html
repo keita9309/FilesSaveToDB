@@ -10,6 +10,10 @@
     <br><br>
     <button type="submit">アップロード</button>
   </form>
+  <form action="#" th:action="@{/download}" method="get">
+    <input type="hidden" name="_method" value="download" />
+    <input type="submit" value="ダウンロード" />
+  </form>
   <div>
     <p th:text="${message}"></p>
     <img th:src="${'data:image/png;base64,'+image}" alt="" height="250" width="250">
