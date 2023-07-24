@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import com.example.Entity.FileDB;
+import com.example.Entity.FileData;
 
 /**
  * DB接続用のリポジトリークラス
@@ -20,10 +21,16 @@ public interface FilesRepository {
     @Select("select * from file_data where id = #{id}")
     FileDB findById(int id);
     
+    @Select("select * from file_data where id = #{id}")
+    FileData findByIdForDownload(int id);
+    
     @Delete("delete from file_data where id = #{id}")
     void delete(int id);
     
     @Select("select count(*) from file_data where id = #{id}")
     int countRecord(int id);
+    
+    
+    
 
 }
