@@ -1,6 +1,12 @@
 package com.example.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.Base64;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.Entity.FileDB;
+import com.example.Entity.FileData;
 import com.example.service.FileStorageService;
 
 @Controller
@@ -77,6 +84,45 @@ public class FilesController {
   }
   
   /**
+   * 画像データのダウンロード
+   * 
+   * @param id
+   * @param response
+   * @return 画面遷移先(nullを返す)
+ * @throws IOException 
+   */
+  @GetMapping("/download")
+  public String download(HttpServletResponse response) throws IOException {
+      
+      // ダウンロード対象のファイルデータを取得
+      FileData data = storageService.findByIdForDownload(0);
+      
+      // ファイルダウンロードの設定を実施
+      // ファイルの種類は指定しない
+      response.setContentType("application/octet-stream");
+      response.setHeader("Cache-Control", "private");
+      response.setHeader("Pragma", "");
+      response.setHeader("Content-Disposition"
+              , "attachment;filename=\"" + getFileName(data.getName()) + "\"");
+
+      // ダウンロードファイルへ出力
+      try(OutputStream out = response.getOutputStream();
+          InputStream in = data.getInputFile_obj()){
+          byte[] buff = new byte[1024];
+          int length = 0;
+          while((length = in.read(buff, 0, buff.length)) != -1) {
+              out.write(buff, 0, length);
+          }
+          out.flush();
+      }catch(Exception e) {
+          System.err.println(e);
+      }
+      
+      // 画面遷移先はnullを指定
+      return null;
+  }
+  
+  /**
    * DBから取得したバイナリーデータをString型に変換
    * 
    * @param fileImg
@@ -87,5 +133,25 @@ public class FilesController {
       byte[] bytes = fileImg.getFile_obj();
       // バイナリーデータをBase64(byte[]型をString型)に変換し返却
       return Base64.getEncoder().encodeToString(bytes);
+  }
+  
+  /**
+   * ファイルパスからファイル名を取得する
+   * 
+   * @param filePath
+   * @return ファイル名
+   */
+  private String getFileName(String filePath) {
+      String fileName = "";
+      if(filePath != null && !"".equals(filePath)) {
+          try {
+              // ファイル名をUTF-8でエンコードして指定
+              fileName = URLEncoder.encode(new File(filePath).getName(), "UTF-8");
+          } catch(Exception e) {
+              System.err.println(e);
+              return "";
+          }
+      }
+      return fileName;
   }
 }
